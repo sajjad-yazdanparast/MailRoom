@@ -1,0 +1,18 @@
+CREATE TABLE Employee (
+    ID INTEGER IDENTITY(1,1) PRIMARY KEY ,
+    name NVARCHAR(32) NOT NULL,
+    personel_number NUMERIC(10,0) NOT NULL 
+) ;
+
+CREATE TABLE Dignity (
+    ID INTEGER IDENTITY(1,1) PRIMARY KEY ,
+    employee_id INTEGER NOT NULL ,
+    name NVARCHAR(32) NOT NULL ,
+    level INTEGER NOT NULL ,
+    CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES Employee (ID)
+) ;
+
+CREATE TABLE Organization (
+    ID INTEGER IDENTITY(1,1) PRIMARY KEY ,
+    name NVARCHAR(64) NOT NULL 
+)
