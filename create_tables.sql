@@ -42,4 +42,5 @@ CREATE TABLE Interactor (
       CASE WHEN organ_id  IS NULL THEN 0 ELSE 1 END = 1
     ) ,
 
+    CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
 );
