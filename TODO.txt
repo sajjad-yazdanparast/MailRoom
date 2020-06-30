@@ -1,3 +1,4 @@
 1- add every emplyee to a organization 
 2- add telephone to employee and organization
 3- name of every organization must be unique
+4- only get id for inserting into interactor, other fields should be filled automaticaly
