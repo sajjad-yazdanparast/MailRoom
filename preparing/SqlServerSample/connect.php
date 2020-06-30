@@ -1,9 +1,9 @@
 <?php
     $serverName = "localhost";
     $connectionOptions = array(
-        "Database" => "TestPhpDB",
+        "Database" => "MailRoom",
         "Uid" => "sa",
-        "PWD" => "2711378Hossein"
+        "PWD" => "s@j1563j@d"
     );
     //Establishes the connection
     $conn = sqlsrv_connect($serverName, $connectionOptions);
