@@ -1,20 +1,26 @@
 CREATE TABLE Employee (
     ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key
+    boss_id Integer ,
     name NVARCHAR(32) NOT NULL,
     personel_number NUMERIC(10,0) NOT NULL  ,
 
-    PRIMARY KEY (ID) 
+    PRIMARY KEY (ID) , 
+    FOREIGN KEY (boss_id) REFERENCES Employee(ID) 
 ) ;
 
-CREATE TABLE Dignity (
+CREATE TABLE Position (
     ID INTEGER IDENTITY(1,1)  ,  -- auto increment primary key
-    employee_id INTEGER NOT NULL ,          -- foreign key to emplyee
-    name NVARCHAR(32) NOT NULL ,
-    level INTEGER NOT NULL ,
+    employee_id INTEGER NOT NULL ,          -- foreign key to employee
+    name NVARCHAR(32) NOT NULL DEFAULT N'کارمند معمولی',
+    level FLOAT NOT NULL DEFAULT 4,
 
     PRIMARY KEY (ID) ,
     FOREIGN KEY (employee_id) REFERENCES Employee (ID)
 ) ;
+
+
+
+
 
 CREATE TABLE Organization (
     ID INTEGER IDENTITY(1,1) ,
