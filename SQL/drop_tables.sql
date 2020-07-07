@@ -1,16 +1,19 @@
+delete from Attachment ;
+delete from Letter ;
+delete from Document ;
+delete from EmployeePosition ;
 delete from Organization ;
 delete from Employee ;
 delete from Position ;
 delete from Interactor ;
-delete from Letter ;
-delete from Document ;
-delete from Attachment ;
 
-
-drop table Organization ;
-drop table Employee ;
-drop table Position ;
-drop table Interactor ;
+drop table Attachment ;
 drop table Letter ;
 drop table Document ;
-drop table Attachment ;
+drop table EmployeePosition ;
+drop table Position ;
+drop table Employee ;
+drop table Interactor ;
+drop table Organization ;
+
+
