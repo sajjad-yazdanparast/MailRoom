@@ -1,4 +1,4 @@
-CREATE PROCEDURE insert_record @name NVARCHAR(64) 
+CREATE PROCEDURE insert_organization @name NVARCHAR(64) 
 AS 
     INSERT INTO Organization (name) VALUES
     (@name) ;
