@@ -8,7 +8,7 @@
             $this->db = (new DataBaseConnector())->get_connection();
         }
         public function get_all_records(){
-            $tsql = "SELECT name FROM Organization" ;
+            $tsql = "EXEC get_all_organizations" ;
             $getResults= sqlsrv_query($this->db, $tsql);
             if ($getResults == FALSE)
                 die(FormatErrors(sqlsrv_errors()));
@@ -25,7 +25,7 @@
 
         }
         public function insert_record($name){
-            $tsql = "EXEC insert_record @name = ?" ;
+            $tsql = "EXEC insert_organization @name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql,array($name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
