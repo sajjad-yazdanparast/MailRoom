@@ -11,8 +11,8 @@ drop table Attachment ;
 drop table Letter ;
 drop table Document ;
 drop table EmployeePosition ;
-drop table Position ;
 drop table Employee ;
+drop table Position ;
 drop table Interactor ;
 drop table Organization ;
 

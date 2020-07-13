@@ -95,8 +95,9 @@ CREATE TABLE Interactor (
 
 CREATE TABLE Letter (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    sender INTEGER ,
-    reciever INTEGER ,
+    sender INTEGER ,                -- foreign key to interactor 
+    reciever INTEGER ,              -- foreign key to interactor 
+    intermediate_interactor INTEGER , -- foreign key to interactor 
     text_l NVARCHAR(MAX) ,
     type_l INTEGER ,
     date_l DATE DEFAULT GETUTCDATE() ,
@@ -104,7 +105,20 @@ CREATE TABLE Letter (
 
     PRIMARY KEY (ID) ,
     FOREIGN KEY (sender) REFERENCES Interactor(ID) ,
-    FOREIGN KEY (reciever) REFERENCES Interactor(ID) 
+    FOREIGN KEY (reciever) REFERENCES Interactor(ID) ,
+    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(ID) ,
+
+    CONSTRAINT CK_type_l_in_range CHECK (type_l in (1,2,3,4)) ,
+    -- type | name 
+    -- 1    | varede
+    -- 2    | sadere
+    -- 3    | dakheli 
+    -- 4    | khareji
+    CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
+        CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
+        CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
+      ) ,
+    CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever)='TRUE')
 
 ) ;
 
@@ -117,7 +131,15 @@ CREATE TABLE Document (
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (owner_d) REFERENCES Interactor(ID) 
+    FOREIGN KEY (owner_d) REFERENCES Interactor(ID) ,
+
+    CONSTRAINT CK_type_d_in_range CHECK (type_d in (1,2,3,4,5)) 
+    -- type | name 
+    -- 1    | adi 
+    -- 2    | mahramane 
+    -- 3    | kheyli mahramane 
+    -- 4    | serri 
+    -- 5    | be koli serri 
 ) ;
 
 
