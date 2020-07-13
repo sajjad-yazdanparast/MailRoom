@@ -72,10 +72,10 @@ CREATE TABLE EmployeePosition (
 
 CREATE TABLE Interactor (
     ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key 
-    name NVARCHAR(64) NOT NULL ,
-    address NVARCHAR(256) NOT NULL ,
-    telephone NUMERIC(11,0) NOT NULL,   
-    postal_code NUMERIC(11,0) NOT NULL ,
+    name NVARCHAR(64) NOT NULL , -- delete it 
+    address NVARCHAR(256) NOT NULL , -- --> give it to each organization
+    telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
+    postal_code NUMERIC(11,0) NOT NULL , -- --> make this as primary key
 
     employee_id INTEGER ,
     organ_id INTEGER ,
