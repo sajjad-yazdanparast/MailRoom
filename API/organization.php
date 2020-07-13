@@ -19,13 +19,13 @@
             
                 $output[] = $obj;
             }
-            
+            sqlsrv_free_stmt($getResults);
             $myJSON = json_encode($output);
             echo $myJSON;
 
         }
         public function insert_record($name){
-            $tsql = "INSERT INTO Organization (name) VALUES (?) ;" ;
+            $tsql = "EXEC insert_record @name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql,array($name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
