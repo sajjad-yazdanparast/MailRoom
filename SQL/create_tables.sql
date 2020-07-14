@@ -3,7 +3,8 @@
 CREATE TABLE Organization (
     ID INTEGER IDENTITY(1,1) ,
     name NVARCHAR(64) NOT NULL UNIQUE ,
-
+    address NVARCHAR(256) NOT NULL , -- --> give it to each organization
+    telephone NUMERIC(11,0) NOT NULL,  
     PRIMARY KEY (ID) 
 ) ;
 
@@ -37,6 +38,7 @@ CREATE TABLE Employee (
     ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key
     organ_id INTEGER ,          -- foreign key to Organization
     personel_number NUMERIC(10,0) NOT NULL  ,
+    telephone NUMERIC(11,0) NOT NULL,   
     rank FLOAT ,               -- Foreign key to Position
     boss_id Integer ,           -- Forein key to Employee
     name NVARCHAR(32) NOT NULL,
@@ -71,16 +73,16 @@ CREATE TABLE EmployeePosition (
 
 
 CREATE TABLE Interactor (
-    ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key 
-    name NVARCHAR(64) NOT NULL , -- delete it 
-    address NVARCHAR(256) NOT NULL , -- --> give it to each organization
-    telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
-    postal_code NUMERIC(11,0) NOT NULL , -- --> make this as primary key
+    -- ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key 
+    -- name NVARCHAR(64) NOT NULL , -- delete it 
+    -- address NVARCHAR(256) NOT NULL , -- --> give it to each organization
+    -- telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
+    interaction_code NUMERIC(11,0) IDENTITY(10000000000,1) , -- --> make this as primary key
 
     employee_id INTEGER ,
     organ_id INTEGER ,
 
-    PRIMARY KEY (ID) ,
+    PRIMARY KEY (interaction_code) ,
     FOREIGN KEY (employee_id) REFERENCES Employee(ID) ,
     FOREIGN KEY (organ_id) REFERENCES Organization(ID) ,
 
@@ -89,7 +91,7 @@ CREATE TABLE Interactor (
       CASE WHEN organ_id  IS NULL THEN 0 ELSE 1 END = 1
     ) ,
 
-    CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
+    -- CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
 );
 
 
@@ -104,9 +106,9 @@ CREATE TABLE Letter (
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (sender) REFERENCES Interactor(ID) ,
-    FOREIGN KEY (reciever) REFERENCES Interactor(ID) ,
-    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(ID) ,
+    FOREIGN KEY (sender) REFERENCES Interactor(interaction_code) ,
+    FOREIGN KEY (reciever) REFERENCES Interactor(interaction_code) ,
+    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(interaction_code) ,
 
     CONSTRAINT CK_type_l_in_range CHECK (type_l in (1,2,3,4)) ,
     -- type | name 
@@ -131,7 +133,7 @@ CREATE TABLE Document (
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (owner_d) REFERENCES Interactor(ID) ,
+    FOREIGN KEY (owner_d) REFERENCES Interactor(interaction_code) ,
 
     CONSTRAINT CK_type_d_in_range CHECK (type_d in (1,2,3,4,5)) 
     -- type | name 
