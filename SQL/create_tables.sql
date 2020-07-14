@@ -39,7 +39,7 @@ CREATE TABLE Employee (
     organ_id INTEGER ,          -- foreign key to Organization
     personel_number NUMERIC(10,0) NOT NULL  ,
     telephone NUMERIC(11,0) NOT NULL,   
-    rank FLOAT ,               -- Foreign key to Position
+    rank FLOAT DEFAULT 7 ,               -- Foreign key to Position
     boss_id Integer ,           -- Forein key to Employee
     name NVARCHAR(32) NOT NULL,
 
@@ -47,7 +47,7 @@ CREATE TABLE Employee (
     UNIQUE(organ_id,personel_number) ,
 
     PRIMARY KEY (ID) , 
-    FOREIGN KEY (rank) REFERENCES Position(rank) ,
+    FOREIGN KEY (rank) REFERENCES Position(rank) ON DELETE SET DEFAULT ,
 
 
     CONSTRAINT CK_has_boss_except_levels_below_3 CHECK (
@@ -64,11 +64,11 @@ CREATE TABLE Employee (
 
 CREATE TABLE EmployeePosition (
     employee_id INTEGER ,
-    rank FLOAT ,
+    rank FLOAT DEFAULT 7,
 
     PRIMARY KEY (employee_id,rank) ,
-    FOREIGN KEY (employee_id) REFERENCES Employee (ID),
-    FOREIGN KEY (rank) REFERENCES Position(rank)
+    FOREIGN KEY (employee_id) REFERENCES Employee (ID) ON DELETE CASCADE ,
+    FOREIGN KEY (rank) REFERENCES Position(rank) ON DELETE SET DEFAULT
 )
 
 
@@ -83,8 +83,8 @@ CREATE TABLE Interactor (
     organ_id INTEGER ,
 
     PRIMARY KEY (interaction_code) ,
-    FOREIGN KEY (employee_id) REFERENCES Employee(ID) ,
-    FOREIGN KEY (organ_id) REFERENCES Organization(ID) ,
+    FOREIGN KEY (employee_id) REFERENCES Employee(ID) ON DELETE CASCADE ,
+    FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE ,
 
     CONSTRAINT CK_emp_or_org CHECK (
         CASE WHEN employee_id IS NULL THEN 0 ELSE 1 END +
@@ -94,21 +94,20 @@ CREATE TABLE Interactor (
     -- CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
 );
 
-
 CREATE TABLE Letter (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    sender INTEGER ,                -- foreign key to interactor 
-    reciever INTEGER ,              -- foreign key to interactor 
-    intermediate_interactor INTEGER , -- foreign key to interactor 
+    sender NUMERIC(11,0) ,                -- foreign key to interactor 
+    reciever NUMERIC(11,0) ,              -- foreign key to interactor 
+    intermediate_interactor NUMERIC(11,0) , -- foreign key to interactor 
     text_l NVARCHAR(MAX) ,
     type_l INTEGER ,
     date_l DATE DEFAULT GETUTCDATE() ,
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (sender) REFERENCES Interactor(interaction_code) ,
-    FOREIGN KEY (reciever) REFERENCES Interactor(interaction_code) ,
-    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(interaction_code) ,
+    FOREIGN KEY (sender) REFERENCES Interactor(interaction_code) ON DELETE SET NULL ,
+    FOREIGN KEY (reciever) REFERENCES Interactor(interaction_code) ON DELETE NO ACTION ,
+    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(interaction_code) ON DELETE NO ACTION,
 
     CONSTRAINT CK_type_l_in_range CHECK (type_l in (1,2,3,4)) ,
     -- type | name 
@@ -126,14 +125,14 @@ CREATE TABLE Letter (
 
 CREATE TABLE Document (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    owner_d INTEGER ,
+    owner_d NUMERIC(11,0)  ,
     text_d NVARCHAR(MAX) ,
     type_d INTEGER ,
     date_d DATE DEFAULT GETUTCDATE() ,
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (owner_d) REFERENCES Interactor(interaction_code) ,
+    FOREIGN KEY (owner_d) REFERENCES Interactor(interaction_code) ON DELETE SET NULL,
 
     CONSTRAINT CK_type_d_in_range CHECK (type_d in (1,2,3,4,5)) 
     -- type | name 
@@ -154,10 +153,10 @@ CREATE TABLE Attachment (
     file_a VARBINARY(MAX) ,   -- files such as images, voices, ...
 
     PRIMARY KEY(ID) ,
-    FOREIGN KEY (letter_belong_to_id) REFERENCES Letter(ID) ,
-    FOREIGN KEY (document_belong_to_id) REFERENCES Document(ID) ,
-    FOREIGN KEY (letter_attached_id) REFERENCES Letter(ID) ,
-    FOREIGN KEY (document_attached_id) REFERENCES Document(ID) ,
+    FOREIGN KEY (letter_belong_to_id) REFERENCES Letter(ID) ON DELETE CASCADE ,
+    FOREIGN KEY (document_belong_to_id) REFERENCES Document(ID) ON DELETE CASCADE,
+    FOREIGN KEY (letter_attached_id) REFERENCES Letter(ID) ON DELETE NO ACTION ,
+    FOREIGN KEY (document_attached_id) REFERENCES Document(ID) ON DELETE NO ACTION,
 
     CONSTRAINT CK_not_self_attachment CHECK (
         letter_belong_to_id <> letter_attached_id 
