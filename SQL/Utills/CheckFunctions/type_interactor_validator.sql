@@ -11,7 +11,7 @@ BEGIN
 
     SELECT @sender_emp_id = employee_id , @sender_org_id = organ_id 
     FROM Interactor 
-    WHERE ID = @sender ;
+    WHERE interaction_code = @sender ;
 
     IF @sender_emp_id IS NOT NULL 
     BEGIN 
@@ -22,7 +22,7 @@ BEGIN
 
     SELECT @reciever_emp_id = employee_id , @reciever_org_id = organ_id 
     FROM Interactor 
-    WHERE ID = @reciever ;
+    WHERE interaction_code = @reciever ;
 
     IF @reciever_emp_id IS NOT NULL 
     BEGIN 
