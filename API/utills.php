@@ -17,4 +17,16 @@ function FormatErrors( $errors )
     echo json_encode($output) ;
 }
 
+
+function print_output($response_code , $status , $message)
+    {
+        $obj->status = $status;
+        if($status)
+            $obj->data =  $message;        
+        else
+            $obj->error =  $message;        
+        echo json_encode($obj);
+        http_response_code($response_code);
+    }
+
 ?>
