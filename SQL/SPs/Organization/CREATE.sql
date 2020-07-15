@@ -3,3 +3,5 @@ AS
     INSERT INTO Organization (name,address,telephone) VALUES
     (@name,@address,@telephone) ;
 GO ;
+
+-- drop PROCEDURE insert_organization

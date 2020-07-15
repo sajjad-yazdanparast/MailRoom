@@ -53,9 +53,9 @@
             sqlsrv_free_stmt($getResults);
             print_output(200 , true , $output);
         }
-        public function insert_record($name){
-            $tsql = "EXEC insert_organization @name = ?" ;
-            $getResults = sqlsrv_query($this->db,$tsql,array($name)) ;
+        public function insert_record($name,$address,$telephone){
+            $tsql = "EXEC insert_organization @name = N'?', @address = N'?' , @telephone = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql,array($name,$address,$telephone)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
                 die(FormatErrors(sqlsrv_errors()));
@@ -154,8 +154,10 @@
         break ;
         case "POST" :
             $name = $_POST["name"] ;
+            $address = $_POST["address"] ;
+            $telephone = $_POST["telephone"];
             header('Content-Type: application/json');
-           ( new OrganizationModifier())->insert_record($name) ;
+           ( new OrganizationModifier())->insert_record($name,$address,$telephone) ;
         break ;
         case "DELETE" :
             header('Content-Type: application/json');

@@ -77,11 +77,13 @@ CREATE TABLE Interactor (
     -- name NVARCHAR(64) NOT NULL , -- delete it 
     -- address NVARCHAR(256) NOT NULL , -- --> give it to each organization
     -- telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
-    interaction_code NUMERIC(11,0) IDENTITY(10000000000,1) , -- --> make this as primary key
+    interaction_code NUMERIC(11,0) IDENTITY(1000000,1) , -- --> make this as primary key
 
     employee_id INTEGER ,
     organ_id INTEGER ,
 
+    UNIQUE(organ_id,employee_id) ,
+    
     PRIMARY KEY (interaction_code) ,
     FOREIGN KEY (employee_id) REFERENCES Employee(ID) ON DELETE CASCADE ,
     FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE ,
@@ -150,7 +152,7 @@ CREATE TABLE Attachment (
     document_belong_to_id INTEGER ,   -- belong to which document
     letter_attached_id INTEGER ,     -- which letter is attached to this attachment
     document_attached_id INTEGER ,   -- which document is attached to this attachment
-    file_a VARBINARY(MAX) ,   -- files such as images, voices, ...
+    file_a NVARCHAR(MAX) ,   -- files such as images, voices, ...
 
     PRIMARY KEY(ID) ,
     FOREIGN KEY (letter_belong_to_id) REFERENCES Letter(ID) ON DELETE CASCADE ,

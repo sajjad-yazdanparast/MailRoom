@@ -15,6 +15,7 @@ function FormatErrors( $errors )
         $output[] = $obj ;
     }
     echo json_encode($output) ;
+    http_response_code(400);
 }
 
 
