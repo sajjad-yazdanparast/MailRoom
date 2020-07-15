@@ -77,10 +77,12 @@ select * from Attachment
 
 
 
--- SELECT * from Organization
+SELECT * from Organization
 
 select * from Letter
 select * from Employee
 DELETE from Organization where Id = 1 ;
 select * from Employee
 SELECT * from Letter
+
+SELECT * from Organization
