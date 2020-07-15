@@ -4,6 +4,7 @@ AS
     WHERE ID = @id ;
 GO ;
 
+-- EXEC delete_employee_by_id @id = 1 ;
 CREATE PROCEDURE delete_employee_by_organ_id_and_personel_number @organ_id INTEGER, @personel_number NUMERIC(10,0)
 AS 
     DELETE FROM Employee 

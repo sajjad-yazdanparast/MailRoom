@@ -48,7 +48,7 @@ CREATE TABLE Employee (
 
     PRIMARY KEY (ID) , 
     FOREIGN KEY (rank) REFERENCES Position(rank) ON DELETE SET DEFAULT ,
-
+    FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE,
 
     CONSTRAINT CK_has_boss_except_levels_below_3 CHECK (
         CASE WHEN rank <3  THEN 1 ELSE 0 END +
@@ -77,39 +77,48 @@ CREATE TABLE Interactor (
     -- name NVARCHAR(64) NOT NULL , -- delete it 
     -- address NVARCHAR(256) NOT NULL , -- --> give it to each organization
     -- telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
-    interaction_code NUMERIC(11,0) IDENTITY(1000000,1) , -- --> make this as primary key
+    interaction_code INTEGER , -- --> make this as primary key
+    is_organ BIT DEFAULT 0 ,
+    -- employee_id INTEGER ,
+    -- organ_id INTEGER ,
 
-    employee_id INTEGER ,
-    organ_id INTEGER ,
-
-    UNIQUE(organ_id,employee_id) ,
+    -- UNIQUE(organ_id,employee_id) ,
     
-    PRIMARY KEY (interaction_code) ,
-    FOREIGN KEY (employee_id) REFERENCES Employee(ID) ON DELETE CASCADE ,
-    FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE ,
+    PRIMARY KEY (is_organ,interaction_code) ,
+    -- FOREIGN KEY (employee_id) REFERENCES Employee(ID) ON DELETE CASCADE ,
+    -- FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE,
 
-    CONSTRAINT CK_emp_or_org CHECK (
-        CASE WHEN employee_id IS NULL THEN 0 ELSE 1 END +
-      CASE WHEN organ_id  IS NULL THEN 0 ELSE 1 END = 1
-    ) ,
+    -- CONSTRAINT CK_emp_or_org CHECK (
+    --     CASE WHEN employee_id IS NULL THEN 0 ELSE 1 END +
+    --   CASE WHEN organ_id  IS NULL THEN 0 ELSE 1 END = 1
+    -- ) ,
 
     -- CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
 );
 
+
 CREATE TABLE Letter (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    sender NUMERIC(11,0) ,                -- foreign key to interactor 
-    reciever NUMERIC(11,0) ,              -- foreign key to interactor 
-    intermediate_interactor NUMERIC(11,0) , -- foreign key to interactor 
+
+    sender INTEGER ,                -- foreign key to interactor 
+    reciever INTEGER ,              -- foreign key to interactor 
+    intermediate_interactor INTEGER , -- foreign key to interactor 
+
+    is_sender_organ BIT DEFAULT 0 ,
+    is_reciever_organ BIT DEFAULT 0 ,
+    is_intermediate_interactor_organ BIT DEFAULT 0 ,
+
     text_l NVARCHAR(MAX) ,
-    type_l INTEGER ,
     date_l DATE DEFAULT GETUTCDATE() ,
+    type_l INTEGER ,
+
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (sender) REFERENCES Interactor(interaction_code) ON DELETE SET NULL ,
-    FOREIGN KEY (reciever) REFERENCES Interactor(interaction_code) ON DELETE NO ACTION ,
-    FOREIGN KEY (intermediate_interactor) REFERENCES Interactor(interaction_code) ON DELETE NO ACTION,
+    -- FOREIGN KEY (is_sender_organ, sender) REFERENCES Interactor(is_organ ,interaction_code) ON DELETE SET NULL ,
+    -- FOREIGN KEY (is_reciever_organ, reciever) REFERENCES Interactor(is_organ, interaction_code) ON DELETE SET NULL ,
+    -- FOREIGN KEY (is_intermediate_interactor_organ, intermediate_interactor) REFERENCES Interactor(is_organ, interaction_code) ON DELETE SET NULL,
+
 
     CONSTRAINT CK_type_l_in_range CHECK (type_l in (1,2,3,4)) ,
     -- type | name 
@@ -117,24 +126,54 @@ CREATE TABLE Letter (
     -- 2    | sadere
     -- 3    | dakheli 
     -- 4    | khareji
+
     CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
         CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
         CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
       ) ,
-    CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever)='TRUE')
+    CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
 
 ) ;
 
+-- drop table InteractorLetter
+
+-- CREATE TABLE InteractorLetter (
+--     sender INTEGER ,
+--     reciever INTEGER ,
+--     intermediate_interactor INTEGER ,
+
+--     is_sender_organ BIT DEFAULT 0 ,
+--     is_reciever_organ BIT DEFAULT 0 ,
+--     is_intermediate_interactor_organ BIT DEFAULT 0 ,
+
+--     letter_id INTEGER  ,
+
+--     type_l INTEGER ,
+
+--     -- PRIMARY KEY (letter_id,sender,reciever,intermediate_interactor) ,
+--     FOREIGN KEY (letter_id) REFERENCES Letter(ID) ON DELETE CASCADE  ,
+
+
+
+--     CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
+--         CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
+--         CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
+--       ) ,
+--     CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
+
+-- );
+
 CREATE TABLE Document (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    owner_d NUMERIC(11,0)  ,
+    owner_id INTEGER ,
+    is_owner_organ BIT DEFAULT 0 ,
     text_d NVARCHAR(MAX) ,
     type_d INTEGER ,
     date_d DATE DEFAULT GETUTCDATE() ,
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (owner_d) REFERENCES Interactor(interaction_code) ON DELETE SET NULL,
+    FOREIGN KEY (is_owner_organ,owner_id) REFERENCES Interactor(is_organ,interaction_code) ON DELETE SET NULL ,
 
     CONSTRAINT CK_type_d_in_range CHECK (type_d in (1,2,3,4,5)) 
     -- type | name 
@@ -155,10 +194,10 @@ CREATE TABLE Attachment (
     file_a NVARCHAR(MAX) ,   -- files such as images, voices, ...
 
     PRIMARY KEY(ID) ,
-    FOREIGN KEY (letter_belong_to_id) REFERENCES Letter(ID) ON DELETE CASCADE ,
-    FOREIGN KEY (document_belong_to_id) REFERENCES Document(ID) ON DELETE CASCADE,
-    FOREIGN KEY (letter_attached_id) REFERENCES Letter(ID) ON DELETE NO ACTION ,
-    FOREIGN KEY (document_attached_id) REFERENCES Document(ID) ON DELETE NO ACTION,
+    FOREIGN KEY (letter_belong_to_id) REFERENCES Letter(ID) ON DELETE NO ACTION ,
+    FOREIGN KEY (document_belong_to_id) REFERENCES Document(ID) ON DELETE NO ACTION ,
+    FOREIGN KEY (letter_attached_id) REFERENCES Letter(ID) ON DELETE SET NULL  ,
+    FOREIGN KEY (document_attached_id) REFERENCES Document(ID) ON DELETE SET NULL ,
 
     CONSTRAINT CK_not_self_attachment CHECK (
         letter_belong_to_id <> letter_attached_id 
@@ -166,3 +205,5 @@ CREATE TABLE Attachment (
         document_belong_to_id <> document_attached_id
     )
 );
+
+-- drop table Attachment;

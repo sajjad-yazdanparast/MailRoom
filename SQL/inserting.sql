@@ -16,30 +16,43 @@ VALUES (2,3123456789,7,'mohammad',1,09123456789);
 
 select * from Employee
 
-INSERT INTO Interactor (employee_id,organ_id) VALUES 
-(1,null) ,
-(null,1) 
 
-INSERT INTO Interactor (employee_id,organ_id) VALUES 
-(2,null) ,
-(null,2) ,
-(3,null)
+INSERT INTO Interactor (interaction_code,is_organ) VALUES 
+(1,1) ,
+(2,1) 
+
+
+INSERT INTO Interactor (interaction_code,is_organ) VALUES 
+(1,0)  ,
+(2,0) ,
+(3,0)
 
 -- INSERT INTO Letter ()
 -- VALUES () ;
 
+-- delete from Employee where ID =1  ;
 
-select * from Interactor
+-- select * from Employee
+
+-- select * from Interactor
+-- delete from Employee WHERE ID = 15 ;
+-- select * from Interactor
+
 -- 10000000001
 -- 09136477484
 
-INSERT INTO Letter (sender,reciever,type_l,text_l) 
-VALUES (1000000,1000001,3,N'سلام نظر به فلان ، فلان کار را بکنید') 
+INSERT INTO Letter (sender,reciever,is_sender_organ,is_reciever_organ,type_l,text_l) 
+VALUES (1,2,0,0,3,N'سلام نظر به فلان ، فلان کار را بکنید') 
 
 
-INSERT INTO Letter (sender,reciever,type_l,text_l) 
-VALUES (1000000,1000003,3,N'سلام نظر به فلان ، فلان کار را بکنید') 
+INSERT INTO Letter (sender,reciever,is_sender_organ,is_reciever_organ,type_l,text_l) 
+VALUES (1,3,0,0,2,N'سلام نظر به فلان ، فلان کار را بکنید') 
+
+
+INSERT INTO Letter (sender,reciever,is_sender_organ,is_reciever_organ,type_l,text_l) 
+VALUES (1,3,1,0,2,N'سلام نظر به فلان ، فلان کار را بکنید') 
 -- rank to khodet bayead por koni sajjad 
+
 select * from Letter
 
 -- DECLARE @text NVARCHAR(MAX) ;
@@ -49,8 +62,8 @@ select * from Letter
 
 -- exec (@SQLString )
 
-INSERT INTO Document (owner_d,type_d,text_d) VALUES
-(1000000,2,N'یاااااااااااااااا علی')
+INSERT INTO Document (owner_id,is_owner_organ,type_d,text_d) VALUES
+(1,0,2,N'یاااااااااااااااا علی')
 
 SELECT * from Document
 
@@ -60,4 +73,14 @@ INSERT INTO Attachment (document_belong_to_id,letter_attached_id,file_a) VALUES
 
 select * from Attachment
 
-delete from Attachment
+-- delete from Attachment
+
+
+
+-- SELECT * from Organization
+
+select * from Letter
+select * from Employee
+DELETE from Organization where Id = 1 ;
+select * from Employee
+SELECT * from Letter
