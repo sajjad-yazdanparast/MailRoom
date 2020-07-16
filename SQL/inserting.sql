@@ -17,15 +17,18 @@ VALUES (2,3123456789,7,'mohammad',1,09123456789);
 select * from Employee
 
 
-INSERT INTO Interactor (interaction_code,is_organ) VALUES 
-(1,1) ,
-(2,1) 
+SELECT * from EmployeePosition
+
+SELECT * from Interactor
+-- INSERT INTO Interactor (interaction_code,is_organ) VALUES 
+-- (1,1) ,
+-- (2,1) 
 
 
-INSERT INTO Interactor (interaction_code,is_organ) VALUES 
-(1,0)  ,
-(2,0) ,
-(3,0)
+-- INSERT INTO Interactor (interaction_code,is_organ) VALUES 
+-- (1,0)  ,
+-- (2,0) ,
+-- (3,0)
 
 -- INSERT INTO Letter ()
 -- VALUES () ;
@@ -40,7 +43,7 @@ INSERT INTO Interactor (interaction_code,is_organ) VALUES
 
 -- 10000000001
 -- 09136477484
-
+select * from Interactor
 INSERT INTO Letter (sender,reciever,is_sender_organ,is_reciever_organ,type_l,text_l) 
 VALUES (1,2,0,0,3,N'سلام نظر به فلان ، فلان کار را بکنید') 
 
@@ -75,14 +78,26 @@ select * from Attachment
 
 -- delete from Attachment
 
+-- DECLARE @m INTEGER ;
+-- SELECT @m = ID  from Organization where Id = NULL ;
+-- IF @m = NULL 
+-- BEGIN
+--     PRINT 'mamad' ;
+-- END
+-- ELSE
+-- BEGIN
+--     PRINT'sajjad';
+-- END
+
+-- SELECT * from Employee where organ_id = 1 ;
+
+-- select * from Letter
+-- select * from Employee
+-- DELETE from Organization where Id = 1 ;
+-- select * from Employee
+-- SELECT * from Letter
+
+-- SELECT * from Organization
 
 
-SELECT * from Organization
-
-select * from Letter
-select * from Employee
-DELETE from Organization where Id = 1 ;
-select * from Employee
-SELECT * from Letter
-
-SELECT * from Organization
+-- send letters 
