@@ -112,7 +112,6 @@
         }
 
         public function update_records_by_name($old_name ,$new_name){
-            echo $old_name ."   ". $new_name;
             $tsql = "EXEC update_organization_name_by_name @old_name = ? , @new_name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql , array($old_name,$new_name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
