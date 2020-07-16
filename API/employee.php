@@ -24,6 +24,7 @@
                 $obj->personel_number = $row['personel_number'];
                 $obj->rank = $row['rank'];
                 $obj->boss_id = $row['boss_id'];
+                $obj->telephone = $row['telephone'] ;
                 
                 $output[] = $obj;
             }
@@ -46,6 +47,8 @@
                 $obj->personel_number = $row['personel_number'];
                 $obj->rank = $row['rank'];
                 $obj->boss_id = $row['boss_id'];
+                $obj->telephone = $row['telephone'] ;
+
 
                 $output[] = $obj;
             }
@@ -54,19 +57,19 @@
         }
 
 
-        public function insert_record($organ_id , $personel_number , $name , $rank , $boss_id){
+        public function insert_record($organ_id , $personel_number , $name , $rank , $boss_id , $telephone){
 
         
             if($boss_id == -1)
             {
             
-                $tsql = "EXEC insert_high_level_employee @organ_id = ? , @personel_number = ? , @name = ? , @rank = ?" ;
-                $getResults = sqlsrv_query($this->db,$tsql,array($organ_id , $personel_number ,$name ,$rank)) ;
+                $tsql = "EXEC insert_high_level_employee @organ_id = ? , @personel_number = ? , @name = ? , @rank = ? , @telephone = ?" ;
+                $getResults = sqlsrv_query($this->db,$tsql,array($organ_id , $personel_number ,$name ,$rank, $telephone)) ;
             }
             else
             {
-                $tsql = "EXEC insert_low_level_employee @organ_id = ? , @personel_number = ? , @name = ? , @rank = ? , @boss_id = ?" ;
-                $getResults = sqlsrv_query($this->db,$tsql,array($organ_id , $personel_number,$name,$rank , $boss_id)) ;
+                $tsql = "EXEC insert_low_level_employee @organ_id = ? , @personel_number = ? , @name = ? , @rank = ? , @boss_id = ? , @telephone = ? " ;
+                $getResults = sqlsrv_query($this->db,$tsql,array($organ_id , $personel_number,$name,$rank , $boss_id, $telephone)) ;
             }
         
             $rowsAffected = sqlsrv_rows_affected($getResults);
@@ -121,7 +124,7 @@
             {
                 $boss_id = $_POST[boss_id];
             }
-            (new EmployeeModifier())->insert_record($_POST[organ_id],$_POST[personel_number],$_POST[name],$_POST[rank],$boss_id) ;
+            (new EmployeeModifier())->insert_record($_POST[organ_id],$_POST[personel_number],$_POST[name],$_POST[rank],$boss_id,$_POST[telephone]) ;
         break;
     }
 

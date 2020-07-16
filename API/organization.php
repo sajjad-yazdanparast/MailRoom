@@ -16,6 +16,8 @@
             $output = array();
             while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
                 $obj["name"] = $row['name'];
+                $obj["address"] = $row['address'];
+                $obj["telephone"] = $row['telephone'];
                 $output[] = $obj;
             }
             sqlsrv_free_stmt($getResults);
@@ -33,6 +35,8 @@
             while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
                 $obj->id= $row['ID'];
                 $obj->name = $row['name'];
+                $obj["address"] = $row['address'];
+                $obj["telephone"] = $row['telephone'];
                 $output[] = $obj;
             }
             sqlsrv_free_stmt($getResults);
@@ -48,13 +52,15 @@
             while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
                 $obj->id= $row['ID'];
                 $obj->name = $row['name'];
+                $obj["address"] = $row['address'];
+                $obj["telephone"] = $row['telephone'];
                 $output[] = $obj;
             }
             sqlsrv_free_stmt($getResults);
             print_output(200 , true , $output);
         }
         public function insert_record($name,$address,$telephone){
-            $tsql = "EXEC insert_organization @name = N'?', @address = N'?' , @telephone = ?" ;
+            $tsql = "EXEC insert_organization @name = ?, @address = ? , @telephone = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql,array($name,$address,$telephone)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
@@ -107,7 +113,7 @@
 
         public function update_records_by_name($old_name ,$new_name){
             echo $old_name ."   ". $new_name;
-            $tsql = "EXEC update_organization_by_name @old_name = ? , @new_name = ?" ;
+            $tsql = "EXEC update_organization_name_by_name @old_name = ? , @new_name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql , array($old_name,$new_name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
@@ -119,7 +125,7 @@
 
         }
         public function update_records_by_id($id ,$new_name){
-            $tsql = "EXEC update_organization_by_id @id = ? , @new_name = ?" ;
+            $tsql = "EXEC update_organization_name_by_id @id = ? , @new_name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql , array($id,$new_name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
@@ -153,9 +159,9 @@
         
         break ;
         case "POST" :
-            $name = $_POST["name"] ;
-            $address = $_POST["address"] ;
-            $telephone = $_POST["telephone"];
+            $name = $_POST[name] ;
+            $address = $_POST[address] ;
+            $telephone = $_POST[telephone];
             header('Content-Type: application/json');
            ( new OrganizationModifier())->insert_record($name,$address,$telephone) ;
         break ;
