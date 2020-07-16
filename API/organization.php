@@ -163,7 +163,10 @@
             $address = $_POST[address] ;
             $telephone = $_POST[telephone];
             header('Content-Type: application/json');
-           ( new OrganizationModifier())->insert_record($name,$address,$telephone) ;
+            if($name !="" && $address!="" && $telephone!="")
+                (new OrganizationModifier())->insert_record($name,$address,$telephone) ;
+            else
+                print_output(400 , false , "no entery");
         break ;
         case "DELETE" :
             header('Content-Type: application/json');
