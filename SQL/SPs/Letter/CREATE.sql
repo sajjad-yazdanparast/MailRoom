@@ -20,7 +20,7 @@ go ;
 
 -- drop procedure send_letter_to_employee;
 
-EXEC send_letter @sender = 1 , @reciever = 1 , @intermediate_interactor=NULL , @is_sender_organ=1 , @is_reciever_organ = 0 , @is_intermediate_interactor_organ= 0 , @text = N'نامه شماره ۱' , @type=3, @letter_to_be_attached = Null , @doc_to_be_attached = Null , @file_to_be_attached = NULL ;
+-- EXEC send_letter @sender = 2 , @reciever = 1 , @intermediate_interactor=NULL , @is_sender_organ=0 , @is_reciever_organ = 0 , @is_intermediate_interactor_organ= 0 , @text = N'نامه شماره ۱' , @type=3, @letter_to_be_attached = Null , @doc_to_be_attached = Null , @file_to_be_attached = NULL ;
 
 -- delete from Letter where ID = 1002 
 -- select * from Interactor 
