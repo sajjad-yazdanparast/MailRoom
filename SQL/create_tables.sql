@@ -73,28 +73,11 @@ CREATE TABLE EmployeePosition (
 
 
 CREATE TABLE Interactor (
-    -- ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key 
-    -- name NVARCHAR(64) NOT NULL , -- delete it 
-    -- address NVARCHAR(256) NOT NULL , -- --> give it to each organization
-    -- telephone NUMERIC(11,0) NOT NULL,   -- --> give it to each employee
     interaction_code INTEGER , -- --> make this as primary key
     is_organ BIT DEFAULT 0 ,
-    -- employee_id INTEGER ,
-    -- organ_id INTEGER ,
-
-    -- UNIQUE(organ_id,employee_id) ,
     
     PRIMARY KEY (is_organ,interaction_code) ,
-    -- FOREIGN KEY (employee_id) REFERENCES Employee(ID) ON DELETE CASCADE ,
-    -- FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE,
-
-    -- CONSTRAINT CK_emp_or_org CHECK (
-    --     CASE WHEN employee_id IS NULL THEN 0 ELSE 1 END +
-    --   CASE WHEN organ_id  IS NULL THEN 0 ELSE 1 END = 1
-    -- ) ,
-
-    -- CONSTRAINT CK_validate_name CHECK (dbo.validate_name(name,employee_id,organ_id)='TRUE')
-);
+    );
 
 
 CREATE TABLE Letter (
@@ -115,11 +98,7 @@ CREATE TABLE Letter (
 
 
     PRIMARY KEY (ID) ,
-    -- FOREIGN KEY (is_sender_organ, sender) REFERENCES Interactor(is_organ ,interaction_code) ON DELETE SET NULL ,
-    -- FOREIGN KEY (is_reciever_organ, reciever) REFERENCES Interactor(is_organ, interaction_code) ON DELETE SET NULL ,
-    -- FOREIGN KEY (is_intermediate_interactor_organ, intermediate_interactor) REFERENCES Interactor(is_organ, interaction_code) ON DELETE SET NULL,
-
-
+    
     CONSTRAINT CK_type_l_in_range CHECK (type_l in (1,2,3,4)) ,
     -- type | name 
     -- 1    | varede
@@ -134,34 +113,6 @@ CREATE TABLE Letter (
     CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
 
 ) ;
-
--- drop table InteractorLetter
-
--- CREATE TABLE InteractorLetter (
---     sender INTEGER ,
---     reciever INTEGER ,
---     intermediate_interactor INTEGER ,
-
---     is_sender_organ BIT DEFAULT 0 ,
---     is_reciever_organ BIT DEFAULT 0 ,
---     is_intermediate_interactor_organ BIT DEFAULT 0 ,
-
---     letter_id INTEGER  ,
-
---     type_l INTEGER ,
-
---     -- PRIMARY KEY (letter_id,sender,reciever,intermediate_interactor) ,
---     FOREIGN KEY (letter_id) REFERENCES Letter(ID) ON DELETE CASCADE  ,
-
-
-
---     CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
---         CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
---         CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
---       ) ,
---     CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
-
--- );
 
 CREATE TABLE Document (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
@@ -205,5 +156,3 @@ CREATE TABLE Attachment (
         document_belong_to_id <> document_attached_id
     )
 );
-
--- drop table Attachment;

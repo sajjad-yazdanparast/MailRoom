@@ -4,45 +4,51 @@ AFTER DELETE
 AS
 BEGIN 
     SET NOCOUNT OFF ;
+    
+    ALTER TABLE Letter NOCHECK CONSTRAINT CK_type_interactor_validation ;
+    ALTER TABLE Letter NOCHECK CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid ;
 
-    DECLARE @interaction_code INTEGER ;
-    SELECT @interaction_code = ID 
-    FROM deleted ;
 
     -- update his letters ==> set sender to null 
     UPDATE Letter 
     SET sender = NULL 
-    WHERE is_sender_organ = 0 AND sender = @interaction_code ;
+    WHERE is_sender_organ = 0 AND sender IN 
+    (
+    SELECT  ID 
+    FROM deleted 
+    ) ;
 
     -- update his letters ==> set reciever to null 
+   
     UPDATE Letter 
     SET reciever = NULL 
-    WHERE is_reciever_organ = 0 AND reciever = @interaction_code ;
+    WHERE is_reciever_organ = 0 AND reciever IN 
+    (
+    SELECT  ID 
+    FROM deleted 
+    );
     
     -- update his letters ==> set itnermediate_interactor to null 
     UPDATE Letter 
-    SET intermediate_interactor = NULL 
-    WHERE is_intermediate_interactor_organ = 0 AND intermediate_interactor = @interaction_code ;
+    SET intermediate_interactor = -1 
+    WHERE is_intermediate_interactor_organ = 0 AND intermediate_interactor IN
+    (
+        SELECT  ID 
+        FROM deleted 
+    ) ;
     
 
     -- delete interactor 
     DELETE FROM Interactor 
-    WHERE is_organ = 0 AND interaction_code = @interaction_code ;
+    WHERE is_organ = 0 AND interaction_code IN
+    (
+        SELECT  ID 
+        FROM deleted 
+    );
 
 
-    -- DECLARE @interaction_code NUMERIC(11,0) ;
-    
-    -- SELECT @interaction_code = interaction_code FROM
-    -- Interactor 
-    -- WHERE
-    -- employee_id = (SELECT ID FROM deleted) ;
-
-    -- DELETE FROM Letter 
-    -- WHERE sender = @interaction_code OR reciever = @interaction_code ;
-
-
-    -- DELETE FROM Interactor 
-    -- WHERE interaction_code = @interaction_code ;
+    ALTER TABLE Letter CHECK CONSTRAINT CK_type_interactor_validation ;
+    ALTER TABLE Letter CHECK CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid ;
 
     PRINT 'Letters of this deleted Employee has been updated successfully!' ;
 
@@ -50,5 +56,3 @@ BEGIN
 END 
 
 -- drop Trigger employee_delete_trigger;
-
-select * from Interactor
