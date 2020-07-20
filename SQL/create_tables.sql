@@ -35,26 +35,29 @@ INSERT INTO Position (rank,name) VALUES
 
 
 CREATE TABLE Employee (
-    ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key
+    -- ID INTEGER IDENTITY(1,1) ,  -- auto increment primary key
     organ_id INTEGER ,          -- foreign key to Organization
-    personel_number NUMERIC(10,0) NOT NULL  ,
+    personel_number NUMERIC(10,0)  , -- unique in each organization
+
+
+    name NVARCHAR(32) NOT NULL,
     telephone NUMERIC(11,0) NOT NULL,   
     rank FLOAT DEFAULT 7 ,               -- Foreign key to Position
-    boss_id Integer ,           -- Forein key to Employee
-    name NVARCHAR(32) NOT NULL,
-
     
-    UNIQUE(organ_id,personel_number) ,
+    boss_personel_number NUMERIC(10,0) ,           -- Forein key to Employee
 
-    PRIMARY KEY (ID) , 
+
+
+
+    PRIMARY KEY (organ_id,personel_number) , 
     FOREIGN KEY (rank) REFERENCES Position(rank) ON DELETE SET DEFAULT ,
     FOREIGN KEY (organ_id) REFERENCES Organization(ID) ON DELETE CASCADE,
 
     CONSTRAINT CK_has_boss_except_levels_below_3 CHECK (
         CASE WHEN rank <3  THEN 1 ELSE 0 END +
-        CASE WHEN boss_id  IS NULL THEN 0 ELSE 1 END = 1
+        CASE WHEN boss_personel_number  IS NULL THEN 0 ELSE 1 END = 1
     ) ,
-    CONSTRAINT CK_emp_can_be_created CHECK (dbo.emp_can_be_created(ID,rank)='TRUE'),
+    CONSTRAINT CK_emp_can_be_created CHECK (dbo.emp_can_be_created(personel_number,organ_id,rank)='TRUE'),
     
     -- At first , every employee is being added as a basic employee 
 ) ;
@@ -63,33 +66,31 @@ CREATE TABLE Employee (
 
 
 CREATE TABLE EmployeePosition (
-    employee_id INTEGER ,
+    employee_personel_number NUMERIC(10,0) ,
+    organ_id INTEGER ,
     rank FLOAT DEFAULT 7,
 
-    PRIMARY KEY (employee_id,rank) ,
-    FOREIGN KEY (employee_id) REFERENCES Employee (ID) ON DELETE CASCADE ,
+    PRIMARY KEY (organ_id,employee_personel_number,rank) ,
+    FOREIGN KEY (organ_id,employee_personel_number) REFERENCES Employee (organ_id,personel_number) ON DELETE CASCADE ,
     FOREIGN KEY (rank) REFERENCES Position(rank) ON DELETE SET DEFAULT
 )
 
 
 CREATE TABLE Interactor (
-    interaction_code INTEGER , -- --> make this as primary key
-    is_organ BIT DEFAULT 0 ,
-    
-    PRIMARY KEY (is_organ,interaction_code) ,
-    );
+    ID INTEGER IDENTITY(1,1) ,
+
+    organ_id INTEGER , 
+    personel_number NUMERIC(10,0) ,
+
+    UNIQUE(organ_id,personel_number) ,
+
+    PRIMARY KEY (ID) ,
+    FOREIGN KEY (organ_id,personel_number) REFERENCES Employee(organ_id,personel_number) ON DELETE CASCADE 
+)
 
 
 CREATE TABLE Letter (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-
-    sender INTEGER ,                -- foreign key to interactor 
-    reciever INTEGER ,              -- foreign key to interactor 
-    intermediate_interactor INTEGER , -- foreign key to interactor 
-
-    is_sender_organ BIT DEFAULT 0 ,
-    is_reciever_organ BIT DEFAULT 0 ,
-    is_intermediate_interactor_organ BIT DEFAULT 0 ,
 
     text_l NVARCHAR(MAX) ,
     date_l DATE DEFAULT GETUTCDATE() ,
@@ -106,25 +107,41 @@ CREATE TABLE Letter (
     -- 3    | dakheli 
     -- 4    | khareji
 
-    CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
-        CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
-        CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
-      ) ,
-    CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
+    -- CONSTRAINT CK_only_in_type_4_intermediate_interactor_should_be_valid CHECK (
+    --     CASE WHEN intermediate_interactor IS NULL THEN 0 ELSE 1 END +
+    --     CASE WHEN type_l = 4 THEN 0 ELSE 1 END = 1
+    --   ) ,
+    -- CONSTRAINT CK_type_interactor_validation CHECK (dbo.type_interactor_validator(type_l,sender,reciever,is_sender_organ,is_reciever_organ)='TRUE')
 
 ) ;
 
+CREATE TABLE InteractorLetter (
+    letter_id INTEGER ,
+    sender INTEGER ,
+    reciever INTEGER ,
+    intermediate_interactor INTEGER ,
+
+    date_l DATE DEFAULT GETUTCDATE() ,
+
+    UNIQUE(letter_id,sender,intermediate_interactor,reciever) ,
+
+    -- FOREIGN KEY (letter_id) REFERENCES Letter(ID) ON DELETE CASCADE,
+    -- FOREIGN KEY (sender) REFERENCES Interactor (ID) ON DELETE SET NULL ,
+    -- FOREIGN KEY (reciever) REFERENCES Interactor (ID) ON DELETE SET NULL ,
+    -- FOREIGN KEY (intermediate_interactor) REFERENCES Interactor (ID) ON DELETE SET NULL ,
+
+)
 CREATE TABLE Document (
     ID INTEGER IDENTITY(1,1),    --auto increment primary key
-    owner_id INTEGER ,
-    is_owner_organ BIT DEFAULT 0 ,
     text_d NVARCHAR(MAX) ,
     type_d INTEGER ,
+
+    owner_id INTEGER ,
     date_d DATE DEFAULT GETUTCDATE() ,
 
 
     PRIMARY KEY (ID) ,
-    FOREIGN KEY (is_owner_organ,owner_id) REFERENCES Interactor(is_organ,interaction_code) ON DELETE SET NULL ,
+    FOREIGN KEY (owner_id) REFERENCES Interactor(ID) ON DELETE SET NULL ,
 
     CONSTRAINT CK_type_d_in_range CHECK (type_d in (1,2,3,4,5)) 
     -- type | name 
