@@ -12,7 +12,7 @@ $conn = sqlsrv_connect($serverName, $connectionOptions);
 echo ("Inserting a new row into table" . PHP_EOL);
 $tsql= "
 INSERT INTO Attachment (document_belong_to_id,letter_attached_id,file_a) VALUES
-(1,1,?)
+(null,null,?)
 ";
 // $params = array('Tehran University');
 $name = $_FILES['file_a']['name'];
@@ -30,7 +30,7 @@ if( in_array($imageFileType,$extensions_arr) ){
 
    // Insert record
 
-   $getResults= sqlsrv_query($conn, $tsql, array($image_content));
+   $getResults= sqlsrv_query($conn, $tsql, array($name));
    $rowsAffected = sqlsrv_rows_affected($getResults);
    if ($getResults == FALSE or $rowsAffected == FALSE)
        echo ('Oh no ');
