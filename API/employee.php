@@ -82,18 +82,84 @@
 
         }
 
-        /*public function insert_record($name){
-            $tsql = "EXEC insert_organization @name = ?" ;
-            $getResults = sqlsrv_query($this->db,$tsql,array($name)) ;
+        public function delete_records_by_id($id){
+            $tsql = "EXEC delete_employee_by_id @id = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql , array($id)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
             if ($getResults == FALSE or $rowsAffected == FALSE)
                 die(FormatErrors(sqlsrv_errors()));
 
-            print_output(201 , true , $name ." added successfully");
+            print_output(200 , true , "employee with id=". $id ." was removed successfully");
 
             sqlsrv_free_stmt($getResults);
 
-        }*/
+        }
+
+        public function delete_records_by_organ_id($organ_id){
+            $tsql = "EXEC delete_all_employees_of_a_organization @organ_id = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql , array($organ_id)) ;
+            $rowsAffected = sqlsrv_rows_affected($getResults);
+            if ($getResults == FALSE or $rowsAffected == FALSE)
+                die(FormatErrors(sqlsrv_errors()));
+
+            print_output(200 , true , "employees with organ_id=". $organ_id ." were removed successfully");
+
+            sqlsrv_free_stmt($getResults);
+
+        }
+
+        public function delete_records_by_organ_id_and_personal_number($organ_id , $personal_number){
+            $tsql = "EXEC delete_employee_by_organ_id_and_personel_number @organ_id = ? , @personel_number = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql , array($organ_id , $personal_number)) ;
+            $rowsAffected = sqlsrv_rows_affected($getResults);
+            if ($getResults == FALSE or $rowsAffected == FALSE)
+                die(FormatErrors(sqlsrv_errors()));
+
+            print_output(200 , true , "employees with organ_id=". $organ_id . " and personel_number = "  . $personal_number ." were removed successfully");
+
+            sqlsrv_free_stmt($getResults);
+
+        }
+
+        public function delete_all_records(){
+            $tsql = "EXEC delete_all_employees" ;
+            $getResults = sqlsrv_query($this->db,$tsql) ;
+            $rowsAffected = sqlsrv_rows_affected($getResults);
+            if ($getResults == FALSE or $rowsAffected == FALSE)
+                die(FormatErrors(sqlsrv_errors()));
+
+            print_output(200 , true ,"all employees were removed successfully");
+
+            sqlsrv_free_stmt($getResults);
+
+        }
+
+        public function update_records_by_id($id ,$new_name){
+            $tsql = "EXEC update_employee_name_by_id @id = ? , @new_name = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql , array($id,$new_name)) ;
+            $rowsAffected = sqlsrv_rows_affected($getResults);
+            if ($getResults == FALSE or $rowsAffected == FALSE)
+                die(FormatErrors(sqlsrv_errors()));
+
+            print_output(200 , true , "employees with ID=". $id ." was updated successfully");
+
+            sqlsrv_free_stmt($getResults);
+
+        }
+
+        public function update_records_by_organ_id_and_personal_number($organ_id , $personal_number ,$new_name){
+            echo $old_name ."   ". $new_name;
+            $tsql = "EXEC update_employee_name_by_organ_id_and_personel_number @organ_id =?, @personel_number =?, @new_name = ?" ;
+            $getResults = sqlsrv_query($this->db,$tsql , array($organ_id , $personal_number ,$new_name)) ;
+            $rowsAffected = sqlsrv_rows_affected($getResults);
+            if ($getResults == FALSE or $rowsAffected == FALSE)
+                die(FormatErrors(sqlsrv_errors()));
+
+            print_output(200 , true , "oraganizations with name=". $old_name ." were updated successfully");
+
+            sqlsrv_free_stmt($getResults);
+
+        }
     }
 
 
@@ -126,6 +192,56 @@
             }
             (new EmployeeModifier())->insert_record($_POST[organ_id],$_POST[personel_number],$_POST[name],$_POST[rank],$boss_id,$_POST[telephone]) ;
         break;
+
+        case "DELETE" :
+            header('Content-Type: application/json');
+            $_DELETE = Array();
+            parse_str(file_get_contents('php://input') , $_DELETE);
+
+
+            if($_DELETE[id] == "" && $_DELETE[organ_id] == "" && $_DELETE[personel_number] == "" )
+                (new EmployeeModifier)->delete_all_records();
+            else
+            {
+                if($_DELETE[id] != ""  && $_DELETE[organ_id] == "" && $_DELETE[personel_number] == "" )
+                    (new EmployeeModifier)->delete_records_by_id($_DELETE[id]);
+                else if($_DELETE[id] == "" && $_DELETE[organ_id] != "" && $_DELETE[personel_number] == "")
+                    (new EmployeeModifier)->delete_records_by_organ_id($_DELETE[organ_id]);
+                else if($_DELETE[id] == "" && $_DELETE[organ_id] != "" && $_DELETE[personel_number] != "")
+                    (new EmployeeModifier)->delete_records_by_organ_id_and_personal_number($_DELETE[organ_id] , $_DELETE[personel_number]);
+                else
+                    print_output(400 , false , "both id and name are not allowed");
+
+            }
+        break ;
+
+        case "PUT" :
+            header('Content-Type: application/json');
+            $_PUT = Array();
+            parse_str(file_get_contents('php://input') , $_PUT);
+        
+
+            if($_PUT[id] == "" && $_PUT[personal_number] == ""  && $_PUT[organ_id] == "")
+                print_output(400 , false , "no entery");
+            else
+            {
+                if($_PUT[new_name] =="")
+                {
+                    print_output(400 , false , "no new name");
+                }
+                else
+                {
+                    if($_PUT[id] != "" && $_PUT[personal_number] == ""  && $_PUT[organ_id] == "")
+                        (new EmployeeModifier)->update_records_by_id($_PUT[id] , $_PUT[new_name]);
+                    else if($_PUT[id] == "" && $_PUT[personal_number] != ""  && $_PUT[organ_id] != "")
+                        (new OrganizationModifier)->update_records_by_organ_id_and_personal_number($_PUT[organ_id] ,$_PUT[personal_number] ,$_PUT[new_name]);
+                    else
+                       print_output(400 , false , "both id and name are not allowed");
+                }
+
+            }
+        break ;
+
     }
 
 

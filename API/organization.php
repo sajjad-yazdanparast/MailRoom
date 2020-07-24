@@ -113,7 +113,6 @@
         }
 
         public function update_records_by_name($old_name ,$new_name){
-            echo $old_name ."   ". $new_name;
             $tsql = "EXEC update_organization_name_by_name @old_name = ? , @new_name = ?" ;
             $getResults = sqlsrv_query($this->db,$tsql , array($old_name,$new_name)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
@@ -164,7 +163,10 @@
             $address = $_POST[address] ;
             $telephone = $_POST[telephone];
             header('Content-Type: application/json');
-           ( new OrganizationModifier())->insert_record($name,$address,$telephone) ;
+            if($name !="" && $address!="" && $telephone!="")
+                (new OrganizationModifier())->insert_record($name,$address,$telephone) ;
+            else
+                print_output(400 , false , "no entery");
         break ;
         case "DELETE" :
             header('Content-Type: application/json');
