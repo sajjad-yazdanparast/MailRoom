@@ -3,10 +3,11 @@
     class DataBaseConnector{
         
         private $serverName = "localhost";
+        //s@j1563j@d
         private $connectionOptions = array(
             "Database" => "MailRoom",
             "Uid" => "sa",
-            "PWD" => "s@j1563j@d"
+            "PWD" => "2711378Hossein"
         );
         private $conn = null ;   // using SINGELTON design pattern
         

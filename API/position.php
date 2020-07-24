@@ -126,7 +126,7 @@
         }
 
         public function update_position_rank_by_name($name ,$new_rank){
-           
+           echo $name ."====" . $new_rank;
             $tsql = "EXEC update_position_rank_by_name @name =?, @new_rank =?" ;
             $getResults = sqlsrv_query($this->db,$tsql , array($name,$new_rank)) ;
             $rowsAffected = sqlsrv_rows_affected($getResults);
@@ -204,7 +204,7 @@
                 }
                 else if($_PUT[name] == "" && $_PUT[rank] != "")
                 {
-                    if($_PUT[new_rank]!="")
+                    if($_PUT[new_name]!="")
                         (new PositionModifier())->update_position_name_by_rank($_PUT[new_name] , $_PUT[rank]);
                     else
                         print_output(400 , false , "new_rank is not allowed");
