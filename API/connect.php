@@ -7,7 +7,7 @@
         private $connectionOptions = array(
             "Database" => "MailRoom",
             "Uid" => "sa",
-            "PWD" => "2711378Hossein"
+            "PWD" => "s@j1563j@d"
         );
         private $conn = null ;   // using SINGELTON design pattern
         
